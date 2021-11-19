@@ -1,16 +1,4 @@
 #include "shell.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-
-void bin_compilation();
-char **parse_args(char *line);
-
-void bin_compilation() {
-    DIR *cwd = opendir("bin");
-
-}
 
 char **parse_args(char *line) {
     // Figuring Out Argument Count by counting number of spaces
@@ -35,10 +23,6 @@ char **parse_args(char *line) {
 }
 
 int main(int argc, char *argv[]) {
-    char input[1024];
-    // Making Sure All Binary Executables Are Created
-    bin_compilation();
-
     // Forever While Loop Representing Shell
     while (1) {
         // Print Current Working Directory
