@@ -1,8 +1,5 @@
 #include "shell.h"
 
-char **parse_command(char *line);
-char ***parse_line(char *line);
-
 char **parse_command(char *line) {
     // Figuring Out Argument Count by counting number of spaces
     char *copy = strdup(line), *token;

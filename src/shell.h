@@ -10,6 +10,13 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+// parse.c
+char **parse_command(char *line);
+char ***parse_line(char *line);
+// redirect.c
+void redirectTo(char* name, char* s);
+void redirectFrom(char* name);
+
 char *cmd[] = {"ls"};
 
 void print_error(char *msg, int err) {

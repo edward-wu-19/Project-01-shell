@@ -1,8 +1,5 @@
 #include "shell.h"
 
-void redirectTo(char* name, char* s);
-void redirectFrom(char* name);
-
 void redirectTo(char* name, char* s){
     int fd = open(name, O_WRONLY);
     int w = write(fd, s, sizeof(s));
@@ -16,8 +13,4 @@ void redirectFrom(char* name){
 
     char * buffer[size];
     int r = read(fd, buffer, size);
-}
-
-int main(){
-    return 0;
 }
