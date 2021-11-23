@@ -22,7 +22,7 @@ char **parse_command(char *line) {
     return A;
 }
 
-char ***parse_line(char *line){
+char ***parse_line(char *line) {
     // Figuring Out number of lines by counting number of semicolons
     char *copy = strdup(line), *token;
     int cnt = 1;

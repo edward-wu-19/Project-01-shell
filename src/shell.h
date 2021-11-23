@@ -17,12 +17,4 @@ char ***parse_line(char *line);
 void redirectTo(char* name, char* s);
 void redirectFrom(char* name);
 
-char *cmd[] = {"ls"};
-
-void print_error(char *msg, int err) {
-    if (err == -1) {
-        printf("%s: %s\n", msg, strerror(errno));
-    }
-}
-
 #endif
