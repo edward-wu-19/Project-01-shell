@@ -1,13 +1,17 @@
 #include "shell.h"
 
 int main(int argc, char *argv[]) {
+    char input[1024];
+
+    // Print Current Working Directory
+    char cwd[1024];
+    getcwd(cwd, sizeof(cwd));
+    printf("%s MESH> ", cwd);
+
+    int w, status;
+
     // Forever While Loop Representing Shell
     while (1) {
-        char input[1024];
-        // Print Current Working Directory
-        char cwd[1024];
-        getcwd(cwd, sizeof(cwd));
-        printf("Current working dir: %s\n", cwd);
 
         if (argc == 1){
             // Take In Commands
@@ -19,7 +23,19 @@ int main(int argc, char *argv[]) {
             if (errno){
                 printf("Error: %s\n\n", strerror(errno));
             }
-            // printf("%s %s\n", args[0], args[1]);
+            // printf("%s\n", *commands[0]);
+
+            int f = fork();
+            if (f){
+                w = wait(&status);
+            }
+            else{
+                execvp(*commands[0], *commands);
+            }
+
+            // Print Current Working Directory
+            getcwd(cwd, sizeof(cwd));
+            printf("%s MESH> ", cwd);
         }
 
         // Run Prgram From SRC

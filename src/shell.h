@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/wait.h>
 
 // parse.c
 char **parse_command(char *line);
