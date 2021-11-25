@@ -16,7 +16,7 @@ void print_error(int err, char *msg) {
     // Printing Error Messages
     if (err == -1) {
         printf("Error: %s\n", msg);
-        printf("%s\n", errno);
+        printf("%s\n", strerror(errno));
     }
 
     // Exiting Function

@@ -27,7 +27,7 @@ void print_header() {
     // Printing Header
     printf("\n");
     printf("%sǁ%s%s@%s%s》➤➤➤ %s%s\n", MESH_BLACK, MESH_GREEN, username, hostname, MESH_BLACK, MESH_BLUE, cwd);
-    printf("%sǁ%sMESH%s》➤➤➤ ", MESH_BLACK, MESH_CYAN, MESH_BLACK, MESH_RESET);
+    printf("%sǁ%sMESH%s》➤➤➤ %s", MESH_BLACK, MESH_CYAN, MESH_BLACK, MESH_RESET);
 
     // Exiting Function
     return;
