@@ -1,18 +1,28 @@
-SRC := src
-BIN := bin
+# Directories
+SRC := ./src
+OBJ := ./obj
+BIN := ./bin
+
+# Files
 SRC_FILES := $(wildcard $(SRC)/*.c)
-BIN_FILES := $(patsubst $(SRC)/%.c, $(BIN)/%.o, $(SRC_FILES))
+OBJ_FILES := $(patsubst $(SRC)/%.c, $(OBJ)/%.o, $(SRC_FILES))
+BIN_FILES := $(BIN)/shell
 
-all: $(BIN_FILES)
-	gcc -o shell $^
+# Making Executable
+all: $(OBJ_FILES)
+	mkdir -p $(BIN)
+	gcc -o $(BIN_FILES) $^
 
-$(BIN)/%.o: $(SRC)/%.c
-	mkdir -p bin
+# Making Object Files
+$(OBJ)/%.o: $(SRC)/%.c
+	mkdir -p $(OBJ)
 	gcc -o $@ -c $<
 
-run:
-	./shell
+# Running Program
+run: $(BIN_FILES)
+	$(BIN_FILES)
 
+# Cleaning Files
 clean:
-	rm -rf bin
-	rm shell
+	rm -rf $(OBJ);
+	rm -rf $(BIN);

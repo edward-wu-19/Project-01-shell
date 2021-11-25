@@ -1,47 +1,51 @@
 #include "shell.h"
 
+// Global Variables
+char *input, ***cmds;
+
+void free_all() {
+    // Freeing Memory
+    free(input);
+    free(cmds);
+
+    // Exiting Function
+    return;
+}
+
+void print_error(int err, char *msg) {
+    // Printing Error Messages
+    if (err == -1) {
+        printf("Error: %s\n", msg);
+        printf("%s\n", errno);
+    }
+
+    // Exiting Function
+    return;
+}
+
 int main(int argc, char *argv[]) {
-    char input[1024];
-
-    // Print Current Working Directory
-    char cwd[1024];
-    getcwd(cwd, sizeof(cwd));
-    printf("%s MESH> ", cwd);
-
-    int w, status;
+    // Clearing Screen And Printing Message
+    clrscr();
+    printf("%sWelcome To MESH By Mohammad Khan And Edward Wu\n%s", MESH_CYAN, MESH_RESET);
 
     // Forever While Loop Representing Shell
     while (1) {
+        // Printing Header
+        print_header();
 
-        if (argc == 1){
-            // Take In Commands
-            fgets(input, 1024, stdin);
-            *strchr(input, '\n') = '\0';
+        // Getting Input
+        input = get_input();
 
-            // Parse Commands
-            char ***commands = parse_line(input);
-            if (errno){
-                printf("Error: %s\n\n", strerror(errno));
-            }
-            // printf("%s\n", *commands[0]);
+        // Parse Input Into Commands
+        cmds = parse_input(input);
 
-            int f = fork();
-            if (f){
-                w = wait(&status);
-            }
-            else{
-                execvp(*commands[0], *commands);
-            }
+        // Fork And Run Commands
+        execute_cmds(cmds);
 
-            // Print Current Working Directory
-            getcwd(cwd, sizeof(cwd));
-            printf("%s MESH> ", cwd);
-        }
-
-        // Run Prgram From SRC
-
+        // Freeing Memory
+        free_all();
     }
 
-    // Ending Statement
+    // Exiting Function
     return 0;
 }

@@ -1,45 +1,38 @@
 #include "shell.h"
 
-char **parse_command(char *line) {
-    // Figuring Out Argument Count by counting number of spaces
-    char *copy = strdup(line), *token;
-    int cnt = 1;
-    while (token = strsep(&line, " ")) {
-        cnt++;
-    }
-
-    // Creating Argument Array
-    char **A = calloc(cnt, sizeof(char *));
-
-    // Adding the pointers to the array
+char **parse(char *str, char *sep) {
+    // Declarations
+    char *copy = str, *token;
     int i = 0;
-    while (token = strsep(&copy, " ")) {
-        A[i] = token;
-        i++;
-    }
 
-    // Returning Argument Array
+    // Allocating Argument Array
+    char **A = calloc(MESH_ARG_COUNT, sizeof(char *));
+
+    // Adding To Array
+    while (token = strsep(&copy, sep)) 
+        if (*token != '\0') A[i++] = token;
+    while (i < MESH_ARG_COUNT)
+        A[i++] = NULL;
+
+    // Exiting Function
     return A;
 }
 
-char ***parse_line(char *line) {
-    // Figuring Out number of lines by counting number of semicolons
-    char *copy = strdup(line), *token;
-    int cnt = 1;
-    while (token = strsep(&line, ";")) {
-        cnt++;
+char ***parse_input(char *input) {
+    // Splitting Lines
+    char **lines = parse(input, ";");
+
+    // Splitting Args
+    char ***cmds = calloc(MESH_ARG_COUNT, sizeof(lines));
+    int i = 0, j = 0;
+    for (; i < MESH_ARG_COUNT; i++) {
+        if (lines[i] == NULL) cmds[i] = NULL;
+        else cmds[i] = parse(lines[i], " ");
     }
 
-    // Creating command array
-    char ***A = calloc(cnt, sizeof(char **));
+    // Freeing Lines
+    free(lines);
 
-    // Adding pointers to array
-    int i = 0;
-    while (token = strsep(&copy, ";")) {
-        A[i] = parse_command(token);
-        i++;
-    }
-
-    // Returning Array
-    return A;
+    // Exiting Function
+    return cmds;
 }
