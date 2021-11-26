@@ -13,10 +13,10 @@
 #include <dirent.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdbool.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/types.h>
-#include <uuid/uuid.h>
 
 // Color Constants (Not Sure About Window Compatability)
 #define MESH_BLACK "\x1B[30m"
@@ -34,12 +34,14 @@
 #define MESH_ARG_COUNT 64
 
 // Execute.c
+void ex_sighandler(int signo);
 void shell_exit();
 void shell_cd(char *path);
 void execute(char **cmd);
 void execute_cmds();
 
 // Header.c
+void he_sighandler(int signo);
 char *get_home_dir();
 void clrscr();
 char *get_input();

@@ -1,5 +1,11 @@
 #include "shell.h"
 
+// Prevents These Signals From Ending Shell, But Doesn't Do Anything Else Yet
+void he_sighandler(int signo) {
+    // SIGINT Case
+    if (signo == SIGINT) return;
+}
+
 void clrscr() {
     // ANSI Escape Codes (Not Sure About Window Compatability)
     // \x1B[H Moves Cursor To Home Position
@@ -60,6 +66,9 @@ void print_header() {
 }
 
 char *get_input() {
+    // Signal Catching
+    signal(SIGINT, he_sighandler);
+
     // Obtaining User Input
     char *input = calloc(MESH_BUFFER_SIZE, sizeof(char));
     print_error(fgets(input, MESH_BUFFER_SIZE, stdin), "Unable To Get User Input");

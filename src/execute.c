@@ -1,5 +1,20 @@
 #include "shell.h"
 
+bool EX_FOUND_SIGINT = false;
+int frk, status;
+
+void ex_sighandler(int signo) {
+    // SIGINT Case
+    if (signo == SIGINT) {
+        if (frk == 0) { // Child
+            free_all();
+            exit(signo);
+        } else { // Parent
+            EX_FOUND_SIGINT = true;
+        }
+    }
+}
+
 void shell_exit() {
     // Goodbye Message
     printf("\n%sThank You For Using MESH.%s\n\n", MESH_CYAN, MESH_RESET);
@@ -14,13 +29,13 @@ void shell_exit() {
 void shell_cd(char *path) {
     // If NULL OR ~, Convert To Home Directory
     if (path == NULL || strcmp(path, "~") == 0) {
-        path = realloc(path, sizeof(char *));
+        path = calloc(1, sizeof(char *));
         strncpy(path, get_home_dir(), MESH_BUFFER_SIZE);
     }
 
     // Checking If Directory Exists
     DIR *dir = opendir(path);
-    if (dir == NULL && errno == ENOENT) print_error(-1, "Directory Doesn't Exist");
+    if (dir == NULL && errno == ENOENT) print_error(-1, "Unable To Find Directory");
     else {
         // Changing Directory
         print_error(chdir(path), "Unable To Change Directory");
@@ -34,16 +49,19 @@ void shell_cd(char *path) {
 }
 
 void execute(char **cmd) {
+    // Catching Signals
+    signal(SIGINT, ex_sighandler);
+
     // Forking Process
-    int f = fork(), status;
+    frk = fork();
 
     // Parent
-    if (f) {
+    if (frk) {
         // Checking Forking
-        print_error(f, "Unable To Fork Process");
+        print_error(frk, "Unable To Fork Process");
 
         // Checking Waiting
-        print_error(waitpid(f, &status, 0), "Unable To Wait For Child Process To End");
+        print_error(waitpid(frk, &status, 0), "Unable To Wait For Child Process To End");
     } else { // Child
         // Check Running Command
         print_error(execvp(cmd[0], cmd), "Unable To Run Command");
@@ -57,9 +75,15 @@ void execute(char **cmd) {
 }
 
 void execute_cmds(char ***cmds) {
+    // Setting FOUND_SIGINT To False
+    EX_FOUND_SIGINT = false;
+
     // Looping Through Commands
     int i = 0;
     for (; i < MESH_ARG_COUNT; i++) {
+        // Checking If SIGINT Has Been Found
+        if (EX_FOUND_SIGINT) break;
+
         // Checking If Commands Exist
         if (cmds[i] == NULL) break;
 
