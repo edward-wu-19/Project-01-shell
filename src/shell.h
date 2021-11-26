@@ -16,7 +16,6 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/types.h>
-#include <uuid/uuid.h>
 
 // Color Constants (Not Sure About Window Compatability)
 #define MESH_BLACK "\x1B[30m"
