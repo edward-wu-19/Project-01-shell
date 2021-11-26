@@ -12,8 +12,8 @@ void shell_exit() {
 }
 
 void shell_cd(char *path) {
-    // If No Argument Provided Default To Home Directory
-    if (path == NULL) {
+    // If NULL OR ~, Convert To Home Directory
+    if (path == NULL || strcmp(path, "~") == 0) {
         path = realloc(path, sizeof(char *));
         strncpy(path, get_home_dir(), MESH_BUFFER_SIZE);
     }
@@ -45,7 +45,7 @@ void execute(char **cmd) {
         // Checking Waiting
         print_error(waitpid(f, &status, 0), "Unable To Wait For Child Process To End");
     } else { // Child
-        // Checking Running Command
+        // Check Running Command
         print_error(execvp(cmd[0], cmd), "Unable To Run Command");
 
         // Ending Child Process

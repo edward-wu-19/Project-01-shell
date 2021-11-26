@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <dirent.h>
 #include <string.h>
