@@ -11,6 +11,21 @@ void clrscr() {
     return;
 }
 
+char *get_home_dir() {
+    // Checking If HOME Environment Exists
+    char *home = getenv("HOME");
+
+    // Failsafing Through User ID And Password ID Structs
+    if (home == NULL) {
+        struct passwd *pswd = getpwuid(getuid());
+        if (pswd == NULL) print_error(-1, "Unable To Get Home Directory");
+        else home = pswd->pw_dir;
+    }
+
+    // Exiting Function
+    return home;
+}
+
 void print_header() {
     // Getting Username
     char username[MESH_BUFFER_SIZE];
@@ -21,8 +36,19 @@ void print_header() {
     print_error(gethostname(hostname, MESH_BUFFER_SIZE), "Unable To Get Hostname");
 
     // Getting CWD
+    char bcwd[MESH_BUFFER_SIZE];
+    print_error(getcwd(bcwd, MESH_BUFFER_SIZE), "Unable To Get CWD");
+
+    // Handling Home Directory Configuration
+    char *home = get_home_dir();
+    char *pos = strstr(bcwd, home);
     char cwd[MESH_BUFFER_SIZE];
-    print_error(getcwd(cwd, MESH_BUFFER_SIZE), "Unable To Get CWD");
+    if (pos == NULL) strncpy(cwd, bcwd, MESH_BUFFER_SIZE);
+    else {
+        cwd[0] = '~';
+        int sz = strlen(home);
+        strncpy(&cwd[1], &bcwd[sz], MESH_BUFFER_SIZE-sz);
+    }
 
     // Printing Header
     printf("\n");
