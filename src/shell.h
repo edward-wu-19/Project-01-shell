@@ -33,12 +33,18 @@
 #define MESH_BUFFER_SIZE 1024
 #define MESH_ARG_COUNT 64
 
+// File Constants
+#define MESH_DATA_DUMP "data"
+
 // Execute.c
 void ex_sighandler(int signo);
 void shell_exit();
 void shell_cd(char *path);
+void piping(char **cmd);
+void redirect(char **cmd);
 void execute(char **cmd);
-void execute_cmds();
+void execute_cmd(char **cmd);
+void execute_cmds(char ***cmds);
 
 // Header.c
 void he_sighandler(int signo);
@@ -48,11 +54,12 @@ char *get_input();
 void print_header();
 
 // Parse.c
+char **subarray(char **cmd, int l, int r);
 char **parse_line(char *line, char *sep);
 char ***parse_input(char *line);
 
 // Shell.c
 void free_all();
-void print_error();
+void print_error(int err, char *msg);
 
 #endif

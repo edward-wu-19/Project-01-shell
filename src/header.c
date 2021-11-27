@@ -43,7 +43,8 @@ void print_header() {
 
     // Getting CWD
     char bcwd[MESH_BUFFER_SIZE];
-    print_error(getcwd(bcwd, MESH_BUFFER_SIZE), "Unable To Get CWD");
+    strncpy(bcwd, getcwd(bcwd, MESH_BUFFER_SIZE), MESH_BUFFER_SIZE);
+    if (bcwd == NULL) print_error(-1, "Unable To Get CWD");
 
     // Handling Home Directory Configuration
     char *home = get_home_dir();
@@ -71,8 +72,9 @@ char *get_input() {
 
     // Obtaining User Input
     char *input = calloc(MESH_BUFFER_SIZE, sizeof(char));
-    print_error(fgets(input, MESH_BUFFER_SIZE, stdin), "Unable To Get User Input");
-    *strchr(input, '\n') = '\0';
+    input = fgets(input, MESH_BUFFER_SIZE, stdin);
+    if (input == NULL) print_error(-1, "Unable To Get User Input");
+    else *strchr(input, '\n') = '\0';
 
     // Exiting Function
     return input;

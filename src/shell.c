@@ -1,10 +1,7 @@
 #include "shell.h"
 
 // TODO
-//  - Signal Handling
-//  - Redirection
 //  - Piping
-//  - Arrow Keys And Tab Auto Complete
 
 // Global Variables
 char *input, ***cmds;
