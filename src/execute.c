@@ -15,7 +15,14 @@ void ex_sighandler(int signo) {
     }
 }
 
-void shell_exit() {
+void mesh_exit(char **cmd) {
+    // Counting Arguments
+    int i = 0;
+    while (cmd[i] != NULL) i++;
+
+    // Sending Warning If Too Many Arguments
+    if (i > 1) print_error(-1, "mesh_exit: Unable To Use More Than 0 Arguments");
+
     // Goodbye Message
     printf("\n%sThank You For Using MESH.%s\n\n", MESH_CYAN, MESH_RESET);
 
@@ -26,24 +33,91 @@ void shell_exit() {
     exit(0);
 }
 
-void shell_cd(char *path) {
+void mesh_cd(char **cmd) {
+    // Counting Arguments
+    int i = 0;
+    while (cmd[i] != NULL) i++;
+
+    // Sending Warning If Too Many Arguments
+    if (i > 2) print_error(-1, "mesh_cd: Unable To Use More Than 1 Arguments");
+
     // If NULL OR ~, Convert To Home Directory
-    if (path == NULL || strcmp(path, "~") == 0) {
-        strncpy(path, get_home_dir(), MESH_BUFFER_SIZE);
-    }
+    char *path;
+    if (cmd[1] == NULL || strcmp(cmd[1], "~") == 0) path = get_home_dir();
+    else path = strdup(cmd[1]);
 
     // Checking If Directory Exists
     DIR *dir = opendir(path);
-    if (dir == NULL) print_error(-1,"Unable To Find Directory");
+    if (dir == NULL) print_error(-1,"mesh_cd: Unable To Find Directory");
     else {
         // Changing Directory
-        print_error(chdir(path), "Unable To Change Directory");
+        print_error(chdir(path), "mesh_cd: Unable To Change Directory");
 
         // Closing Variable
         closedir(dir);
     }
 
     // Exiting Function
+    return;
+}
+
+void mesh_history(char **cmd) {
+    // Counting Arguments
+    int i = 0;
+    while (cmd[i] != NULL) i++;
+
+    // Sending Warning If Too Many Arguments
+    if (i > 2) print_error(-1, "mesh_history: Unable To Use More Than 1 Arguments");
+
+    // Converting Argument Into Int
+    int num;
+    if (i >= 2) num = (int)strtol(cmd[1], NULL, 10);
+    else num = -16;
+    int mx = get_mesh_index();
+    num = (num < 0 ? (mx+num < 0 ? 0 : mx+num) : num);
+
+    // Checking If Out Of Range
+    if (num >= mx) {
+        print_error(-1, "mesh_history: Unable To Access Nonexistent Event");
+        return;
+    }
+
+    // Concatenating All Events
+    for (i = num; i < mx; i++) {
+        printf(" %-5d  %s\n", i, get_event(i));
+    }
+
+    // Exiting Function
+    return;
+}
+
+void mesh_prev(char **cmd) {
+    // Counting Arguments
+    int i = 0;
+    while (cmd[i] != NULL) i++;
+
+    // Sending Warning If Too Many Arguments
+    if (i > 2) print_error(-1, "mesh_prev: Unable To Use More Than 1 Arguments");
+
+    // Converting Argument Into Int
+    int num;
+    if (i >= 2) num = (int)strtol(cmd[1], NULL, 10);
+    else num = 1;
+    int mx = get_mesh_index();
+    num = (num < 0 ? (mx+num < 0 ? 0 : mx+num) : num);
+
+    // Checking If Out Of Range
+    if (num >= mx) {
+        print_error(-1, "Unable To Access Nonexistent Event");
+        return;
+    }
+
+    // Running Previous Command
+    char ***cmds = parse_input(get_event(num));
+    execute_cmds(cmds);
+
+    // Exiting Function
+    free(cmds);
     return;
 }
 
@@ -55,14 +129,14 @@ void redirect(char **cmd) {
     // Backups For Stdin And Stdout
     int stdout_cpy = dup(STDOUT_FILENO), stdin_cpy = dup(STDIN_FILENO);
     if (stdout_cpy == -1 || stdin_cpy == -1) {
-        print_error(-1, "Unable To Create Redirection Backups");
+        print_error(-1, "redirect: Unable To Create Redirection Backups");
         return;
     }
 
     // Creating Combined Input File
     int input = open(MESH_DATA_DUMP, O_CREAT | O_RDWR | O_APPEND, 0644), i, end = 0;
     if (input == -1) {
-        print_error(-1, "Unable To Create Combined Input File");
+        print_error(-1, "redirect: Unable To Create Combined Input File");
         return;
     }
 
@@ -75,7 +149,7 @@ void redirect(char **cmd) {
 
     // Checking For Valid Command
     if (end == 0) {
-        print_error(-1, "Unable To Run Nonexistent Command");
+        print_error(-1, "redirect: Unable To Run Nonexistent Command");
         return;
     }
 
@@ -89,14 +163,14 @@ void redirect(char **cmd) {
             // Checking If File Name Is Given
             char *name = cmd[i+1];
             if (cmd[i+1] == NULL) {
-                print_error(-1, "Unable To Open Nonexistent Input File");
+                print_error(-1, "redirect: Unable To Open Nonexistent Input File");
                 continue;
             }
 
             // Opening File
             int fd = open(name, O_RDONLY);
             if (fd == -1) {
-                print_error(-1, "Unable To Open Input File");
+                print_error(-1, "redirect: Unable To Open Input File");
                 continue;
             }
 
@@ -104,7 +178,7 @@ void redirect(char **cmd) {
             struct stat info;
             int err1 = stat(name, &info);
             if (err1 == -1) {
-                print_error(-1, "Unable To Get File Size");
+                print_error(-1, "redirect: Unable To Get File Size");
                 continue;
             }
             int sz = info.st_size;
@@ -113,21 +187,21 @@ void redirect(char **cmd) {
             char arr[sz];
             int err3 = read(fd, arr, sz);
             if (err3 == -1) {
-                print_error(-1, "Unable To Read Input File");
+                print_error(-1, "redirect: Unable To Read Input File");
                 continue;
             }
 
             // Appending To Combined Input File
             int err4 = write(input, arr, sz);
             if (err4 == -1) {
-                print_error(-1, "Unable To Append To Combined Input File");
+                print_error(-1, "redirect: Unable To Append To Combined Input File");
                 continue;
             }
 
             // Closing Input File;
             int err5 = close(fd);
             if (err5 == -1) {
-                print_error(-1, "Unable To Close Input File");
+                print_error(-1, "redirect: Unable To Close Input File");
                 continue;
             }
         }
@@ -136,7 +210,7 @@ void redirect(char **cmd) {
     // Redirecting Input
     int err1 = dup2(input, STDIN_FILENO);
     if (err1 == -1) {
-        print_error(-1, "Unable To Redirect Input");
+        print_error(-1, "redirect: Unable To Redirect Input");
         return;
     }
 
@@ -150,21 +224,21 @@ void redirect(char **cmd) {
             // Checking If File Name Is Given
             char *name = cmd[i+1];
             if (cmd[i+1] == NULL) {
-                print_error(-1, "Unable To Open When No Output File Given");
+                print_error(-1, "redirect: Unable To Open When No Output File Given");
                 continue;
             }
 
             // Creating File
             int fd = open(name, O_CREAT, 0644);
             if (fd == -1) {
-                print_error(-1, "Unable To Open Output File");
+                print_error(-1, "redirect: Unable To Open Output File");
                 continue;
             }
 
             // Closing File
             int err = close(fd);
             if (err == -1) {
-                print_error(-1, "Unable To Close Output File");
+                print_error(-1, "redirect: Unable To Close Output File");
                 continue;
             }
 
@@ -185,28 +259,28 @@ void redirect(char **cmd) {
                 // Checking If File Name Is Given
                 char *name = cmd[i+1];
                 if (cmd[i+1] == NULL) {
-                    print_error(-1, "Unable To Open When No Output File Given");
+                    print_error(-1, "redirect: Unable To Open When No Output File Given");
                     continue;
                 }
 
                 // Opening File
                 int fd = open(name, permissions, 0644);
                 if (fd == -1) {
-                    print_error(-1, "Unable To Open Output File");
+                    print_error(-1, "redirect: Unable To Open Output File");
                     continue;
                 }
 
                 // Redirecting Output
                 int err = dup2(fd, STDOUT_FILENO);
                 if (err == -1) {
-                    print_error(-1, "Unable To Redirect Output");
+                    print_error(-1, "redirect: Unable To Redirect Output");
                     continue;
                 }
 
                 // Reseting Input File Descriptor
                 int err1 = lseek(input, 0, SEEK_SET);
                 if (err1 == -1) {
-                    print_error(-1, "Unable To Reset Combined Input File");
+                    print_error(-1, "redirect: Unable To Reset Combined Input File");
                     return;
                 }
 
@@ -219,19 +293,19 @@ void redirect(char **cmd) {
     // Resetting STDOUT
     int err2 = dup2(stdout_cpy, STDOUT_FILENO);
     if (err2 == -1) {
-        print_error(-1, "Unable To Reset STDOUT");
+        print_error(-1, "redirect: Unable To Reset STDOUT");
         exit(0);
     }
 
     // Resetting STDIN
     int err3 = dup2(stdin_cpy, STDIN_FILENO);
     if (err3 == -1) {
-        print_error(-1, "Unable To Reset STDIN");
+        print_error(-1, "redirect: Unable To Reset STDIN");
         exit(0);
     }
 
     // Deleting Combined Input File
-    print_error(remove(MESH_DATA_DUMP), "Unable To Remove Combined Input File");
+    print_error(remove(MESH_DATA_DUMP), "redirect: Unable To Remove Combined Input File");
 }
 
 // Running Regular Commands
@@ -242,13 +316,13 @@ void execute(char **cmd) {
     // Parent
     if (frk) {
         // Checking Forking
-        print_error(frk, "Unable To Fork Process");
+        print_error(frk, "execute: Unable To Fork Process");
 
         // Checking Waiting
-        print_error(waitpid(frk, &status, 0), "Unable To Wait For Child Process To End");
+        print_error(waitpid(frk, &status, 0), "execute: Unable To Wait For Child Process To End");
     } else { // Child
         // Check Running Command
-        print_error(execvp(cmd[0], cmd), "Unable To Run Command");
+        print_error(execvp(cmd[0], cmd), "execute: Unable To Run Command");
 
         // Ending Child Process
         free_all(); exit(0);
@@ -274,19 +348,17 @@ void execute_cmd(char **cmd) {
         if (strcmp(cmd[i], "|") == 0) found_piping = true;
     }
 
-    // Checking If Piping And Redirection Are Occuring On Same Line
-    if (found_redirection && found_piping)
-        // Not Functional
-        print_error(-1, "Unable To Redirect And Pipe In The Same Command");
-    else if (found_redirection)
-        // Redirect Function
-        redirect(cmd);
-    else if (found_piping)
-        // Piping Function
-        piping(cmd);
-    else
-        // Regular Command
-        execute(cmd);
+    // Not Functional
+    if (found_redirection && found_piping) print_error(-1, "execute_cmd: Unable To Redirect And Pipe In The Same Command");
+
+    // Redirect Function
+    else if (found_redirection) redirect(cmd);
+
+    // Piping Function
+    else if (found_piping) piping(cmd);
+
+    // Regular Command
+    else execute(cmd);
 
     // Exiting Function
     return;
@@ -309,10 +381,16 @@ void execute_cmds(char ***cmds) {
         char **cmd = cmds[i];
 
         // Quit/Exit Command
-        if (strcmp(cmd[0],"exit") == 0 || strcmp(cmd[0],"quit") == 0) shell_exit();
+        if (strcmp(cmd[0],"exit") == 0 || strcmp(cmd[0],"quit") == 0) mesh_exit(cmd);
 
         // Cd/Chdir Command
-        else if (strcmp(cmd[0],"cd") == 0 || strcmp(cmd[0],"chdir") == 0) shell_cd(cmd[1]);
+        else if (strcmp(cmd[0],"cd") == 0 || strcmp(cmd[0],"chdir") == 0) mesh_cd(cmd);
+
+        // History Command
+        else if (strcmp(cmd[0],"history") == 0) mesh_history(cmd);
+
+        // Prev Command
+        else if (strcmp(cmd[0],"prev") == 0) mesh_prev(cmd);
 
         // All Other Commands
         else execute_cmd(cmd);
