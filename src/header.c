@@ -1,9 +1,12 @@
+// Header File
 #include "shell.h"
 
-// Prevents These Signals From Ending Shell, But Doesn't Do Anything Else Yet
 void he_sighandler(int signo) {
     // SIGINT Case
     if (signo == SIGINT) return;
+
+    // Exiting Function
+    return;
 }
 
 void clrscr() {
@@ -21,10 +24,15 @@ char *get_home_dir() {
     // Checking If HOME Environment Exists
     char *home = getenv("HOME");
 
-    // Failsafing Through User ID And Password ID Structs
+    // Checking If Home Is Still Empty
     if (home == NULL) {
+        // Getting Username Info
         struct passwd *pswd = getpwuid(getuid());
+
+        // Error Checking
         if (pswd == NULL) print_error(-1, "Unable To Get Home Directory");
+
+        // Setting Home Value
         else home = pswd->pw_dir;
     }
 
@@ -44,28 +52,53 @@ void print_header() {
     // Getting CWD
     char bcwd[MESH_BUFFER_SIZE];
     strncpy(bcwd, getcwd(bcwd, MESH_BUFFER_SIZE), MESH_BUFFER_SIZE);
+
+    // Error Checking
     if (bcwd == NULL) print_error(-1, "Unable To Get CWD");
 
-    // Handling Home Directory Configuration
+    // Getting Home Directory
     char *home = get_home_dir();
+
+    // Searching For Home Directory In CWD Path
     char *pos = strstr(bcwd, home);
+
+    // Variable Declaration
     char cwd[MESH_BUFFER_SIZE];
+
+    // If Home Directory Isn't Found Just Copy Directly
     if (pos == NULL) strncpy(cwd, bcwd, MESH_BUFFER_SIZE);
+
+    // Home Directory Is Found
     else {
+        // Adding ~ Symbol To Path
         cwd[0] = '~';
+
+        // Finding Size Of Home Directory Path
         int sz = strlen(home);
+
+        // Copying Everything But Home Directory
         strncpy(&cwd[1], &bcwd[sz], MESH_BUFFER_SIZE-sz);
     }
 
-    // Getting Time
+    // Getting Current Time
     time_t t = time(NULL);
+
+    // Converting Time To String
     char *tm = ctime(&t);
+
+    // Error Checking
     if (tm == NULL) print_error(-1, "Unable To Get Time");
+
+    // Getting Rid Of Extraneous Information
     tm = tm+11;
+
+    // Ending To Get Rid Of Extraneous Information
     *strchr(tm, ' ') = '\0';
 
-    // Printing Header
+    // Going To Newline
     printf("\n");
+
+    // Printing Header With Colors
     printf("%sǁ%s%s@%s%s》➤➤➤ %s%s\n", MESH_BLACK, MESH_GREEN, username, hostname, MESH_BLACK, MESH_BLUE, cwd);
     printf("%sǁ%s%s@MESH%s》➤➤➤ %s", MESH_BLACK, MESH_CYAN, tm, MESH_BLACK, MESH_RESET);
 
@@ -77,10 +110,16 @@ char *get_input() {
     // Signal Catching
     signal(SIGINT, he_sighandler);
 
-    // Obtaining User Input
+    // Allocating Memory
     char *input = calloc(MESH_BUFFER_SIZE, sizeof(char));
+
+    // Getting User Input
     input = fgets(input, MESH_BUFFER_SIZE, stdin);
+
+    // If NULL Send Error
     if (input == NULL) print_error(-1, "Unable To Get User Input");
+
+    // End String Properly
     else *strchr(input, '\n') = '\0';
 
     // Exiting Function

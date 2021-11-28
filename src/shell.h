@@ -6,6 +6,7 @@
 // Library Imports
 #include <pwd.h>
 #include <time.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -30,22 +31,24 @@
 #define MESH_WHITE "\x1B[37m"
 #define MESH_RESET "\x1B[0m"
 
-// Number And File Constants
+// Number Constants
 #define MESH_HISTORY_SIZE 16384
 #define MESH_BUFFER_SIZE 1024
 #define MESH_ARG_COUNT 64
-#define MESH_DATA_DUMP "mesh_data_dump"
 
 // Execute.c
 void ex_sighandler(int signo);
 void mesh_exit(char **cmd);
 void mesh_cd(char **cmd);
+bool check_digits(char *str);
 void mesh_history(char **cmd);
 void mesh_prev(char **cmd);
-void piping(char **cmd);
-void redirect(char **cmd);
+void execute_pipes(char **cmd, int n);
 void execute(char **cmd);
-void execute_cmd(char **cmd);
+bool need_redirect(char **split);
+int start_redirect(char **split);
+void reset_redirect(int stdin_cpy, int stdout_cpy);
+void execute_cmd(char *str);
 void execute_cmds(char ***cmds);
 
 // Header.c
@@ -56,6 +59,7 @@ char *get_input();
 void print_header();
 
 // Parse.c
+char *join(char **split, char *sep);
 char **subarray(char **cmd, int l, int r);
 char **parse_line(char *line, char *sep);
 char ***parse_input(char *line);
