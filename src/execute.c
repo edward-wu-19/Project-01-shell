@@ -435,7 +435,7 @@ bool need_redirect(char **split) {
 
 int start_redirect(char **split) {
     // Variable Declarations
-    int end = 0, i, in_pos = -1, out_pos = -1;
+    int end = 0, i;
 
     // Looping Through Arguments To Find Redirection Operators
     for (i = 0; i < MESH_ARG_COUNT && split[i] != NULL; i++) {
@@ -444,8 +444,32 @@ int start_redirect(char **split) {
             // Setting End To Position Of First Redirect Operator
             if (end == 0) end = i;
 
-            // Finding Latest Redirection Operator
-            in_pos = i;
+            // Checking If File Name Exists
+            char *name = split[i+1];
+
+            // Checking Error
+            if (name == NULL) {
+                print_error(-1, "start_redirect: Unable To Redirect From Nonexistent Input File");
+                return -1;
+            }
+
+            // Opening File
+            int fd = open(name, O_RDONLY, 0644);
+
+            // Checking Error
+            if (fd == -1) {
+                print_error(-1, "start_redirect: Unable To Open Input File");
+                return -1;
+            }
+
+            // Redirecting Input
+            int err = dup2(fd, STDIN_FILENO);
+
+            // Checking Error
+            if (err == -1) {
+                print_error(-1, "start_redirect: Unable To Redirect From Input File");
+                return -1;
+            }
         }
 
         // Redirecting STDOUT
@@ -453,75 +477,39 @@ int start_redirect(char **split) {
             // Setting End To Position Of First Redirect Operator
             if (end == 0) end = i;
 
-            // Finding Latest Redirection Operator
-            out_pos = i;
-        }
-    }
+            // Checking If File Name Exists
+            char *name = split[i+1];
 
-    // Redirecting Input If Found Appropiate Redirection Operator
-    if (in_pos != -1) {
-        // Checking If File Name Exists
-        char *name = split[in_pos+1];
+            // Checking Error
+            if (name == NULL) {
+                print_error(-1, "start_redirect: Unable To Redirect To Nonexistent Output File");
+                return -1;
+            }
 
-        // Checking Error
-        if (name == NULL) {
-            print_error(-1, "start_redirect: Unable To Redirect From Nonexistent Input File");
-            return -1;
-        }
+            // Creating Basic Permissions
+            int permissions = O_CREAT | O_WRONLY;
 
-        // Opening File
-        int fd = open(name, O_RDONLY, 0644);
+            // Setting Other Appropiate Permissions
+            if (strcmp(split[i], ">") == 0) permissions |= O_TRUNC;
+            else permissions |= O_APPEND;
 
-        // Checking Error
-        if (fd == -1) {
-            print_error(-1, "start_redirect: Unable To Open Input File");
-            return -1;
-        }
+            // Opening File
+            int fd = open(name, permissions, 0644);
 
-        // Redirecting Input
-        int err = dup2(fd, STDIN_FILENO);
+            // Checking Error
+            if (fd == -1) {
+                print_error(-1, "start_redirect: Unable To Open Output File");
+                return -1;
+            }
 
-        // Checking Error
-        if (err == -1) {
-            print_error(-1, "start_redirect: Unable To Redirect From Input File");
-            return -1;
-        }
-    }
+            // Redirecting Input
+            int err = dup2(fd, STDOUT_FILENO);
 
-    // Redirecting Output If Found Appropiate Redirection Operator
-    if (out_pos != -1) {
-        // Checking If File Name Exists
-        char *name = split[out_pos+1];
-
-        // Checking Error
-        if (name == NULL) {
-            print_error(-1, "start_redirect: Unable To Redirect To Nonexistent Output File");
-            return -1;
-        }
-
-        // Creating Basic Permissions
-        int permissions = O_CREAT | O_WRONLY;
-
-        // Setting Other Appropiate Permissions
-        if (strcmp(split[out_pos], ">") == 0) permissions |= O_TRUNC;
-        else permissions |= O_APPEND;
-
-        // Opening File
-        int fd = open(name, permissions, 0644);
-
-        // Checking Error
-        if (fd == -1) {
-            print_error(-1, "start_redirect: Unable To Open Output File");
-            return -1;
-        }
-
-        // Redirecting Input
-        int err = dup2(fd, STDOUT_FILENO);
-
-        // Checking Error
-        if (err == -1) {
-            print_error(-1, "start_redirect: Unable To Redirect To Output File");
-            return -1;
+            // Checking Error
+            if (err == -1) {
+                print_error(-1, "start_redirect: Unable To Redirect To Output File");
+                return -1;
+            }
         }
     }
 
@@ -622,7 +610,7 @@ void execute_cmds(char ***cmds) {
     EX_FOUND_SIGINT = false;
 
     // Variable Declarations
-    int i, j, n;
+    int i, n = 0;
 
     // Looping Through Commands
     for (i = 0; i < MESH_ARG_COUNT && cmds[i] != NULL; i++) {

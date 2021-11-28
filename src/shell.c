@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
     printf("%sWelcome To MESH By Mohammad Khan And Edward Wu\n%s", MESH_CYAN, MESH_RESET);
 
     // Setting The 0th Command
-    mesh_hist[mesh_index++] = strdup("make run");
+    mesh_hist[mesh_index++] = strdup("history");
 
     // Forever While Loop Representing Shell
     while (1) {

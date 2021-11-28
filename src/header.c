@@ -99,8 +99,8 @@ void print_header() {
     printf("\n");
 
     // Printing Header With Colors
-    printf("%sǁ%s%s@%s%s》➤➤➤ %s%s\n", MESH_BLACK, MESH_GREEN, username, hostname, MESH_BLACK, MESH_BLUE, cwd);
-    printf("%sǁ%s%s@MESH%s》➤➤➤ %s", MESH_BLACK, MESH_CYAN, tm, MESH_BLACK, MESH_RESET);
+    printf("ǁ%s%s@%s%s》➤➤➤ %s%s\n", MESH_GREEN, username, hostname, MESH_RESET, MESH_BLUE, cwd);
+    printf("%sǁ%s%s@MESH%s》➤➤➤ ", MESH_RESET, MESH_CYAN, tm, MESH_RESET);
 
     // Exiting Function
     return;
