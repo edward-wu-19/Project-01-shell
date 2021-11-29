@@ -20,6 +20,7 @@ int get_mesh_index() {
     return mesh_index;
 }
 
+// TODO FIX THIS FUNCTION (Error: ls -al    previous;) enter wrong history 
 void add_event(char *input) {
     // Spliting Input Into Commands And Args
     char **split = parse_line(strdup(input), " \t");
@@ -50,7 +51,7 @@ void add_event(char *input) {
                     }
 
                     // Initializing String
-                    char str[10];
+                    char str[10] = "\0";
 
                     // Converting Integer Into String
                     sprintf(str, "%d", pos);
@@ -58,6 +59,17 @@ void add_event(char *input) {
                     // Replacing Command String
                     split[i+1] = str;
                 }
+            } else if (split[i+1] == NULL) {
+                // Initializing String
+                char str[10] = "\0";
+
+                // Converting Integer Into String
+                sprintf(str, "%d", mesh_index-1);
+
+                // Concatenating This Number To Previous
+                split[i] = strncat(split[i], " ", 1);
+                split[i] = strncat(split[i], str, 10);
+
             }
         }
     }
@@ -122,13 +134,16 @@ int main(int argc, char *argv[]) {
     // Setting The 0th Command
     mesh_hist[mesh_index++] = strdup("history");
 
-    // Forever While Loop Representing Shell
-    while (1) {
+    // While There Are Inputs Run Shell
+    while (!feof(stdin)) {
         // Printing Header
         print_header();
 
         // Getting User Input
         mesh_input = get_input();
+
+        // If Input Is Null Dont Try To Parse Or Run
+        if (mesh_input == NULL) continue;
 
         // Add Input To History
         add_event(strdup(mesh_input));

@@ -102,6 +102,9 @@ void print_header() {
     printf("ǁ%s%s@%s%s》➤➤➤ %s%s\n", MESH_GREEN, username, hostname, MESH_RESET, MESH_BLUE, cwd);
     printf("%sǁ%s%s@MESH%s》➤➤➤ ", MESH_RESET, MESH_CYAN, tm, MESH_RESET);
 
+    // Flushing STDOUT To Make Sure Lines Are Printed In Correct Order
+    print_error(fflush(stdout), "Unable To Flush STDOUT");
+
     // Exiting Function
     return;
 }
@@ -116,11 +119,11 @@ char *get_input() {
     // Getting User Input
     input = fgets(input, MESH_BUFFER_SIZE, stdin);
 
-    // If NULL Send Error
-    if (input == NULL) print_error(-1, "Unable To Get User Input");
+    // End String Properly If Needed
+    if (input != NULL) *strchr(input, '\n') = '\0';
 
-    // End String Properly
-    else *strchr(input, '\n') = '\0';
+    // New Line For Viewing Purposes
+    printf("\n");
 
     // Exiting Function
     return input;

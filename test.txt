@@ -1,0 +1,24 @@
+ls
+ls -al
+pwd
+echo            hello
+cd ..; pwd
+cd Project-01-shell/bin; pwd
+chdir ../..; pwd; chdir Project-01-shell; pwd
+history
+history 3
+history      5
+previous
+previous -11
+previous 2
+ls -al > temp1.txt
+wc < temp1.txt
+wc < temp1.txt > temp2.txt
+ls -al >> temp2.txt
+ls -al
+ls -al | wc
+ls -al | sort | uniq | wc
+ls -al > temp3.txt | wc
+wc < temp3.txt | wc
+wc < temp3.txt | wc |       wc
+exit

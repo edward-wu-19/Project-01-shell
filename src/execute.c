@@ -195,7 +195,7 @@ void mesh_history(char **cmd) {
 
 void mesh_previous(char **cmd) {
     // Variable Declarations
-    int i = 0, num;
+    int i = 0, num, pos;
 
     // Counting Number Of Arguments
     while (cmd[i] != NULL) i++;
@@ -208,7 +208,7 @@ void mesh_previous(char **cmd) {
 
     // Sending Warning If First Argument Is Not A Number
     if (cmd[1] != NULL && !check_digits(cmd[1])) {
-        print_error(-1, "mesh_history: Unable To Use Non-Numeric First Argument");
+        print_error(-1, "mesh_previous: Unable To Use Non-Numeric First Argument");
         return;
     }
 
@@ -216,13 +216,10 @@ void mesh_previous(char **cmd) {
     if (i >= 2) num = (int)strtol(cmd[1], NULL, 10);
 
     // If No Argument Given Do Default Value
-    else num = 0;
+    else num = -1;
 
     // Finding Max Number Possible
     int mx = get_mesh_index();
-
-    // Finding Start Position
-    int pos;
 
     // If Num Is Negative Have A Negative Offset
     if (num < 0) pos = mx+num-1;
