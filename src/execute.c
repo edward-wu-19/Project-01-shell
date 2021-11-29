@@ -441,6 +441,9 @@ int start_redirect(char **split) {
     for (i = 0; i < MESH_ARG_COUNT && split[i] != NULL; i++) {
         // Redirecting STDIN
         if (strcmp(split[i], "<") == 0) {
+            // First Argument Should Not Be A Redirect Operator
+            if (i == 0) continue;
+
             // Setting End To Position Of First Redirect Operator
             if (end == 0) end = i;
 
@@ -474,6 +477,9 @@ int start_redirect(char **split) {
 
         // Redirecting STDOUT
         if (strcmp(split[i], ">") == 0 || strcmp(split[i], ">>") == 0) {
+            // First Argument Should Not Be A Redirect Operator
+            if (i == 0) continue;
+
             // Setting End To Position Of First Redirect Operator
             if (end == 0) end = i;
 
