@@ -44,9 +44,9 @@ cd Project-01-shell
 
 ### Limitations
 <ul> 
-  <li>The maximum argument number for line of input is 128, but this can be easily raised if needed</li>
-  <li>The maximum string buffer size for a line of input is 2048 characters, but this can be easily raised if needed</li>
-  <li>The maximum history size is 32768, but this can be easily raised if needed</li>
+  <li>The maximum argument number for line of input is 128 (2^7), but this can be easily raised if needed</li>
+  <li>The maximum string buffer size for a line of input is 2048 (2^11) characters, but this can be easily raised if needed</li>
+  <li>The maximum history size is 32768 (2^15), but this can be easily raised if needed</li>
 </ul>
 
 ### Shell Specific Functions
@@ -54,7 +54,7 @@ cd Project-01-shell
   <li> 'exit' or 'quit': Takes in either zero (defaults to 0) or one numeric argument and exits the shell with that number as its exit value</li>
   <li> 'cd' or 'chdir': Takes in either zero (defaults to home directory) or one string argument and attempts to change to the specificed directory</li> 
   <li> 'history': Similar to the bash history command, accepts either zero (defaults to 1000) or one non negative numeric argument n and prints a list of size n of previous commands inputted to the shell</li>
-  <li> 'previous': Similar to the '!number' command in bash, accepts either zero (defualts to -1) or one numeric argument n and runs the input either n events ago (if n is negative) or the event with index n (if n is positive)</li>
+  <li> 'previous': Similar to the '!number' command in bash, accepts either zero (defaults to -1) or one numeric argument n and runs the input either n events ago (if n is negative) or the event with index n (if n is positive)</li>
 </ul>
   
 ## Function Headers
