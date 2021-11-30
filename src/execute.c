@@ -10,6 +10,9 @@ int frk;
 // Status Results
 int status;
 
+// Function: Performs signal handling (in both child and parent process) for only the SIGINT signal by exiting child process and causing parent process to return to printing the header
+// Arguments: An integer representing the signal caught
+// Return Values: None
 void ex_sighandler(int signo) {
     // SIGINT Case
     if (signo == SIGINT) {
@@ -30,6 +33,8 @@ void ex_sighandler(int signo) {
     return;
 }
 
+// Arguments: An array of strings representing the exit/quit command and its arguments
+// Return Values: None
 void mesh_exit(char **cmd) {
     // Variable Declarations
     int i = 0, num;
@@ -65,6 +70,9 @@ void mesh_exit(char **cmd) {
     exit(num);
 }
 
+// Function: Simulates the bash cd (alternatively chdir) command by changing the cwd of the program
+// Arguments: An array of strings representing the cd/chdir command and its arguments
+// Return Values: None
 void mesh_cd(char **cmd) {
     // Variable Declarations
     int i = 0, j = 0;
@@ -130,6 +138,9 @@ void mesh_cd(char **cmd) {
     return;
 }
 
+// Function: Determines whether a string can be turned into a valid number or not.
+// Arguments: The string that is being tested to be a number or not.
+// Return Values: True if the string can be converted, false otherwise
 bool check_digits(char *str) {
     // Variable Declarations
     int i;
@@ -147,6 +158,9 @@ bool check_digits(char *str) {
     return true;
 }
 
+// Function: Simulates the history command found in bash by printing out a list of all the previous commands sent to the shell
+// Arguments: A string array representing the command and its arguments
+// Return Values: None
 void mesh_history(char **cmd) {
     // Variable Declarations
     int i = 0, num;
@@ -193,6 +207,9 @@ void mesh_history(char **cmd) {
     return;
 }
 
+// Function: A function that simulates the !number command found in bash, by running one of the previous commands sent to the shell depending on the arguments provided
+// Arguments: A string array representing the command and its arguments
+// Return Values: None
 void mesh_previous(char **cmd) {
     // Variable Declarations
     int i = 0, num, pos;
@@ -246,6 +263,9 @@ void mesh_previous(char **cmd) {
     return;
 }
 
+// Function: Sets up and performs file piping between multiple commands using the pipe() and forking child processes
+// Arguments: A string array representing the commands to be piped, and an integer representing the number of commands given
+// Return Values: None
 void execute_pipes(char **cmd, int n) {
     // Variable Declarations
     int i, q;
@@ -369,6 +389,9 @@ void execute_pipes(char **cmd, int n) {
     return;
 }
 
+// Function: Runs a given command either through forking and execvp or through calling one of the 6 shell specific commands, also does signal catching
+// Arguments: A string array representing a command and its arguments
+// Return Values: None
 void execute(char **cmd) {
     // Catching Signals
     signal(SIGINT, ex_sighandler);
@@ -410,6 +433,9 @@ void execute(char **cmd) {
     return;
 }
 
+// Function: Parses through the arguments of a command and determines if redirection needs to occur
+// Arguments: A string array representing a command and its arguments
+// Return Values: True if redirection is needed, false otherwise
 bool need_redirect(char **split) {
     // Variable Declaration
     int i;
@@ -430,6 +456,9 @@ bool need_redirect(char **split) {
     return false;
 }
 
+// Function: Parses through the arguments of a command and sets up redirection by duping STDIN and STDOUT to the appropiate files
+// Arguments: A string array representing a command and its arguments
+// Return Values: An integer representing the position of the first occurrence of a redirection operator
 int start_redirect(char **split) {
     // Variable Declarations
     int end = 0, i;
@@ -520,6 +549,9 @@ int start_redirect(char **split) {
     return end;
 }
 
+// Function: Resets the file descriptors of STDIN and STDOUT after command is run
+// Arguments: Two integers representing the backups of STDIN and STDOUT
+// Return Values: None
 void reset_redirect(int stdin_cpy, int stdout_cpy) {
     // Resetting STDIN
     int err1 = dup2(stdin_cpy, STDIN_FILENO);
@@ -555,6 +587,8 @@ void reset_redirect(int stdin_cpy, int stdout_cpy) {
     return;
 }
 
+// Arguments: A string representing a singular command and its arguments before they are separated
+// Return Values: None
 void execute_cmd(char *str) {
     // STDIN Copy
     int stdin_cpy = dup(STDIN_FILENO);
@@ -608,6 +642,9 @@ void execute_cmd(char *str) {
     return;
 }
 
+// Function: Loops through all the separated commands and determines whether they need to be piped or not and sends them off into the correct function accordingly. Also ends early if signal is found.
+// Arguments: A 2d String array representing a line separated into commands through semi-colon parsing and then separated once again through pipe parsing
+// Return Values: None
 void execute_cmds(char ***cmds) {
     // Setting FOUND_SIGINT To False
     EX_FOUND_SIGINT = false;

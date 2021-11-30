@@ -12,14 +12,21 @@ char *mesh_hist[MESH_HISTORY_SIZE];
 // Indexing Variable
 int mesh_index = 0;
 
+// Function: Obtains the current index of the mesh_hist array, created to sother areas in the executable can be guaranteed access to the index
+// Arguments: None
+// Return Values: An integer representing the current index of the history array
 int get_mesh_index() {
     // Returning Global Variable Mesh_Index
     return mesh_index;
 }
 
+// Function: Parses user input and replaces commands in such a way as to prevent infinite loops and other errors from occurring when previous accesses previous commands
+// Arguments: A string representing user input
+// Return Values: Void
 void add_event(char *input) {
     // Variable Declaration
     int i, q;
+
     // Spliting Input Into Lines
     char **split = parse_line(strdup(input), ";");
 
@@ -95,6 +102,9 @@ void add_event(char *input) {
     return;
 }
 
+// Function: Obtains a previous command from the history array
+// Arguments: An integer representing the index of the command to be obtained
+// Return Values: A string representing the previous comand that is obtained
 char *get_event(int i) {
     // Checking If Event Is In Bounds
     if (i < 0 || i >= mesh_index) {
@@ -109,6 +119,9 @@ char *get_event(int i) {
     }
 }
 
+// Function: Frees most of the relevant data of this section
+// Arguments: None
+// Return Values: None
 void free_all() {
     // Freeing Memory
     free(mesh_input);
@@ -118,6 +131,9 @@ void free_all() {
     return;
 }
 
+// Function: Prints a customized error message along with errno if an error occurs
+// Arguments: An integer representing an err value and a string representing the customized error message
+// Return Values: None
 void print_error(int err, char *msg) {
     // Checking If There Is An Error
     if (err == -1) {
@@ -132,6 +148,9 @@ void print_error(int err, char *msg) {
     return;
 }
 
+// Function: Simulates the entire shell process using a while loop
+// Arguments: Default argument count and array even though they aren't used
+// Return Values: An integer that is the exit value of the program
 int main(int argc, char *argv[]) {
     // Clearing Terminal Screen
     clrscr();

@@ -1,6 +1,9 @@
 // Header File
 #include "shell.h"
 
+// Function: Handles signal handling (only SIGINT) when the shell is awaiting user input, is kind of buggy but prevents shell from ending
+// Arguments: An integer representing the signal caught
+// Return Values: None
 void he_sighandler(int signo) {
     // SIGINT Case
     if (signo == SIGINT) return;
@@ -9,6 +12,9 @@ void he_sighandler(int signo) {
     return;
 }
 
+// Function: A function that clears the terminal screen using ANSI Escape Codes
+// Arguments: None
+// Return Values: None
 void clrscr() {
     // ANSI Escape Codes (Not Sure About Window Compatability)
     // \x1B[H Moves Cursor To Home Position
@@ -20,6 +26,9 @@ void clrscr() {
     return;
 }
 
+// Function: Obtains the home directory of the current user
+// Arguments: None
+// Return Values: A string repesenting the path of the home directory
 char *get_home_dir() {
     // Checking If HOME Environment Exists
     char *home = getenv("HOME");
@@ -40,6 +49,9 @@ char *get_home_dir() {
     return home;
 }
 
+// Function: Prints the header of the mesh shell in color and with a bunch of extra details
+// Arguments: None
+// Return Values: None
 void print_header() {
     // Getting Username
     char username[MESH_BUFFER_SIZE];
@@ -109,6 +121,9 @@ void print_header() {
     return;
 }
 
+// Function: Obtains user input using the fgets command and makes it into a proper string with an ending
+// Arguments: None
+// Return Values: A string repesenting the user input from the terminal
 char *get_input() {
     // Signal Catching
     signal(SIGINT, he_sighandler);
