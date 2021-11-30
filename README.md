@@ -4,49 +4,33 @@ This shell is for a project for Systems Level Programming by Mr. DW. (Period 4)
 
 
 ## Getting Started
-* Clone the repository
+- Clone the repository
 ```
 git clone git@github.com:edward-wu-19/Project-01-shell.git
 ```
-* Change directories
+- Change directories
 ```
 cd Project-01-shell
 ```
-* Compile using make
-```
-make
-```
-* Run using make or directly running the executable
-```
-make run
-```
-or 
-```
-./bin/shell
-```
-* Exit using exit or quit
-``` 
-exit
-```
-or 
-```
-quit
-```
+- Compile using `make`
+- Run using make or directly running the executable
+`make run` or `./bin/shell`
+- Exit using exit or quit
+`exit` or `quit`
 
 
 ## Description
 ### Features
-<ul>
-  <li>Implements bash commands using fork and execvp</li>
-  <li>Parses a line for multiple commands using ;</li>
-  <li>Offers multipiping and redirection functionality</li>
-  <li>'Exit', 'cd', 'history', and 'previous': shell specific functions</li>
-  <li>Input sanitation capability for whitespace (ie. extra spaces and tabs)</li>  
-</ul>
+- Implements bash commands using fork and execvp
+- Parses a line for multiple commands using ;
+- Offers multipiping and redirection functionality using 
+    `<`, `>`, and `>>`
+- 'Exit', 'cd', 'history', and 'previous': shell specific functions
+- Input sanitation capability for whitespace (ie. extra spaces and tabs)
 
 ### Attempted Features
 <ul> 
-  <li>Complete signal handling, but sadly we could only manage to implementing catching the SIGINT signal, all other signals that we tried were unable to be caught</li>
+  <li>Complete signal handling, but sadly we could only manage to implement catching the SIGINT signal. All other signals that we tried were unable to be caught</li>
 </ul>
 
 ### Bugs
@@ -54,13 +38,15 @@ quit
   <li>We have attempted to prevent infinite recursion loops with the 'previous' command to the best of our capability, but some of them may still occur in obscure cases</li>
   <li>The arrow keys cause extraneous text to appear instead of actually moving your cursor in the shell prompt</li>
   <li>Tabbing and then spamming backspace on an empty input may causes the shell prompt to glitch visually for a bit, but it should not cause problems elsewhere</li>
+  <li>Though we have tested MESH successfully on Mac and Linux OS, we are unsure about its Windows compatibility</li>
+  <li>When redirecting a file of commands into MESH, there must be an exit or quit at the end of the commands or else MESH will error because it cannot find the end of the file</li>
 </ul> 
 
 ### Limitations
 <ul> 
-  <li>The maximum argument number for line of input is 64, but this can be easily raised if needed</li>
-  <li>The maximum string buffer size for a line of input is 1024 characters, but this can be easily raised if needed</li>
-  <li>The maximum history size is 16384, but this can be easily raised if needed</li> 
+  <li>The maximum argument number for line of input is 128 (2^7), but this can be easily raised if needed</li>
+  <li>The maximum string buffer size for a line of input is 2048 (2^11) characters, but this can be easily raised if needed</li>
+  <li>The maximum history size is 32768 (2^15), but this can be easily raised if needed</li>
 </ul>
 
 ### Shell Specific Functions
@@ -68,9 +54,8 @@ quit
   <li> 'exit' or 'quit': Takes in either zero (defaults to 0) or one numeric argument and exits the shell with that number as its exit value</li>
   <li> 'cd' or 'chdir': Takes in either zero (defaults to home directory) or one string argument and attempts to change to the specificed directory</li> 
   <li> 'history': Similar to the bash history command, accepts either zero (defaults to 1000) or one non negative numeric argument n and prints a list of size n of previous commands inputted to the shell</li>
-  <li> 'previous': Similar to the '!number' command in bash, accepts either zero (defualts to -1) or one numeric argument n and runs the input either n events ago (if n is negative) or the event with index n (if n is negative)</li>
+  <li> 'previous': Similar to the '!number' command in bash, accepts either zero (defaults to -1) or one numeric argument n and runs the input either n events ago (if n is negative) or the event with index n (if n is positive)</li>
 </ul>
-  
   
 ## Function Headers
 
