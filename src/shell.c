@@ -169,8 +169,9 @@ int main(int argc, char *argv[]) {
         // Getting User Input
         mesh_input = get_input();
 
-        // If Input Is Null Dont Try To Parse Or Run
-        if (mesh_input == NULL) continue;
+        // If Input Is Null, This Means Either EOF Has Been Reached Or Error
+        // Either Way End For Loop And Prepare To End Shell
+        if (mesh_input == NULL) break;
 
         // Add Input To History
         add_event(strdup(mesh_input));
@@ -184,6 +185,12 @@ int main(int argc, char *argv[]) {
         // Freeing Memory
         free_all();
     }
+
+    // Goodbye Message
+    printf("\n%sThank You For Using MESH.%s\n\n", MESH_CYAN, MESH_RESET);
+
+    // Freeing Memory
+    free_all();
 
     // Exiting Function
     return 0;

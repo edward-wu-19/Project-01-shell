@@ -32,9 +32,9 @@
 #define MESH_RESET "\x1B[0m"
 
 // Number Constants
-#define MESH_HISTORY_SIZE 16384
-#define MESH_BUFFER_SIZE 1024
-#define MESH_ARG_COUNT 64
+#define MESH_HISTORY_SIZE 32768
+#define MESH_BUFFER_SIZE 2048
+#define MESH_ARG_COUNT 128
 
 // Execute.c
 void ex_sighandler(int signo);
