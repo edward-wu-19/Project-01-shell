@@ -70,7 +70,7 @@ void add_event(char *input) {
                     sprintf(str, "%d", mesh_index-1);
 
                     // Concatenating This Number To Previous
-                    cmd[q] = strncat(cmd[q], " ", 1);
+                    cmd[q] = strncat(cmd[q], " ", 2);
                     cmd[i] = strncat(cmd[q], str, 10);
 
                 }
