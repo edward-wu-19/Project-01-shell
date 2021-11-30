@@ -21,4 +21,5 @@ ls -al | sort | uniq | wc
 ls -al > temp3.txt | wc
 wc < temp3.txt | wc
 wc < temp3.txt | wc |       wc
+history
 exit

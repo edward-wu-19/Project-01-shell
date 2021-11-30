@@ -1,8 +1,5 @@
 #include "shell.h"
 
-// TODO
-//  - Piping
-
 // String To Store User Input
 char *mesh_input;
 
@@ -20,68 +17,79 @@ int get_mesh_index() {
     return mesh_index;
 }
 
-// TODO FIX THIS FUNCTION (Error: ls -al    previous;) enter wrong history 
 void add_event(char *input) {
-    // Spliting Input Into Commands And Args
-    char **split = parse_line(strdup(input), " \t");
+    // Variable Declaration
+    int i, q;
+    // Spliting Input Into Lines
+    char **split = parse_line(strdup(input), ";");
 
-    // Looping Through The Split Input To Find Previous Command
-    for (int i = 0; i < MESH_ARG_COUNT && split[i] != NULL; i++) {
-        // If Current Command Is Previous
-        if (strcmp(split[i], "previous") == 0) {
-            // If Next Command Is Valid Number
-            if (split[i+1] != NULL && check_digits(split[i+1])) {
-                // Variable Declaration
-                int pos, num;
+    // Looping Through Commands
+    for (i = 0; i < MESH_ARG_COUNT && split[i] != NULL; i++) {
+        // Parsing Command Into Separate Arguments
+        char **cmd = parse_line(strdup(split[i]), " \t");
 
-                // Convert The String Into An Integer
-                num = (int)strtol(split[i+1], NULL, 10);
+        // Looping Through Args To Find Previous
+        for (q = 0; q < MESH_ARG_COUNT && cmd[q] != NULL; q++) {
+            // If Current Command Is Previous
+            if (strcmp(cmd[q], "previous") == 0) {
+                // If Next Command Is Valid Number
+                if (cmd[q+1] != NULL && check_digits(cmd[q+1])) {
+                    // Variable Declarations
+                    int pos, num;
 
-                // If Num Is Negative Make It Positive To Prevent Infinite Loops
-                // (Ie Previous -1 Two Times In A Row)
-                if (num < 0) {
-                    // If Number Is In Range
-                    if (num > -mesh_index) {
-                        // Making Positive
-                        pos = mesh_index+num;
-                    } else {
-                        // Making It Outrageously Negative So It Will Never Run Even Later On
-                        // Preventing More Infinite Negative Loops Later On
-                        pos = -999999;
+                    // Convert The String Into An Integer
+                    num = (int)strtol(cmd[q+1], NULL, 10);
+
+                    // If Num Is Negative Make It Positive To Prevent Infinite Loops
+                    // (Ie Previous -1 Two Times In A Row)
+                    if (num < 0) {
+                        // If Number Is In Range
+                        if (num > -mesh_index) {
+                            // Making Positive
+                            pos = mesh_index+num;
+                        } else {
+                            // Making It Outrageously Negative So It Will Never Run Even Later On
+                            // Preventing More Infinite Negative Loops Later On
+                            pos = -999999;
+                        }
+
+                        // Initializing String
+                        char str[10] = "\0";
+
+                        // Converting Integer Into String
+                        sprintf(str, "%d", pos);
+
+                        // Replacing Command String
+                        cmd[q+1] = str;
                     }
-
+                } else if (cmd[q+1] == NULL) {
                     // Initializing String
                     char str[10] = "\0";
 
                     // Converting Integer Into String
-                    sprintf(str, "%d", pos);
+                    sprintf(str, "%d", mesh_index-1);
 
-                    // Replacing Command String
-                    split[i+1] = str;
+                    // Concatenating This Number To Previous
+                    cmd[q] = strncat(cmd[q], " ", 1);
+                    cmd[i] = strncat(cmd[q], str, 10);
+
                 }
-            } else if (split[i+1] == NULL) {
-                // Initializing String
-                char str[10] = "\0";
-
-                // Converting Integer Into String
-                sprintf(str, "%d", mesh_index-1);
-
-                // Concatenating This Number To Previous
-                split[i] = strncat(split[i], " ", 1);
-                split[i] = strncat(split[i], str, 10);
-
             }
         }
+
+        char *joined_cmd = join(cmd, " ");
+
+        split[i] = joined_cmd;
     }
 
     // Combining String Again
-    char *joined = join(split, " ");
+    char *joined_lines = join(split, ";");
 
     // Adding Event To Mesh_Hist And Updating Mesh_Index
-    mesh_hist[mesh_index++] = strdup(joined);
+    mesh_hist[mesh_index++] = strdup(joined_lines);
 
     // Freeing Memory
-    free(joined);
+    free(joined_lines);
 
     // Exiting Function
     return;
