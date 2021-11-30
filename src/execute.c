@@ -33,6 +33,7 @@ void ex_sighandler(int signo) {
     return;
 }
 
+// Function: Simulates the bash exit (alternatively quit) command by printing a goodbye message and exiting the parent process
 // Arguments: An array of strings representing the exit/quit command and its arguments
 // Return Values: None
 void mesh_exit(char **cmd) {
@@ -587,6 +588,7 @@ void reset_redirect(int stdin_cpy, int stdout_cpy) {
     return;
 }
 
+// Function: Parses a singular command into an argument array, and sets up redirection if necessary, and then sends the command off to be executed
 // Arguments: A string representing a singular command and its arguments before they are separated
 // Return Values: None
 void execute_cmd(char *str) {
