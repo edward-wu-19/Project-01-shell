@@ -132,10 +132,10 @@ char *get_input() {
     char *input = calloc(MESH_BUFFER_SIZE, sizeof(char));
 
     // Getting User Input
-    input = fgets(input, MESH_BUFFER_SIZE, stdin);
+    if (fgets(input, MESH_BUFFER_SIZE, stdin) == NULL) return NULL;
 
     // End String Properly If Needed
-    if (input != NULL) *strchr(input, '\n') = '\0';
+    *strchr(input, '\n') = '\0';
 
     // New Line For Viewing Purposes
     printf("\n");

@@ -170,7 +170,7 @@ int main(int argc, char *argv[]) {
         mesh_input = get_input();
 
         // If Input Is Null, This Means Either EOF Has Been Reached Or Error
-        // Either Way End For Loop And Prepare To End Shell
+        // Either Way End Loop And Prepare To End Shell
         if (mesh_input == NULL) break;
 
         // Add Input To History
@@ -188,9 +188,6 @@ int main(int argc, char *argv[]) {
 
     // Goodbye Message
     printf("\n%sThank You For Using MESH.%s\n\n", MESH_CYAN, MESH_RESET);
-
-    // Freeing Memory
-    free_all();
 
     // Exiting Function
     return 0;
