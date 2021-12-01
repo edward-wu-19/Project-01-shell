@@ -51,7 +51,8 @@ cd Project-01-shell
 ## Function Headers
 
 #### execute.c
-<pre>void ex_sighandler(int signo);
+```c
+void ex_sighandler(int signo);
 void mesh_exit(char **cmd);
 void mesh_cd(char **cmd);
 bool check_digits(char *str);
@@ -63,24 +64,31 @@ bool need_redirect(char **split);
 int start_redirect(char **split);
 void reset_redirect(int stdin_cpy, int stdout_cpy);
 void execute_cmd(char *str);
-void execute_cmds(char ***cmds);</pre>
+void execute_cmds(char ***cmds);
+```
 
 #### header.c
-<pre>void he_sighandler(int signo);
+```c
+void he_sighandler(int signo);
 char *get_home_dir();
 void clrscr();
 char *get_input();
-void print_header();</pre>
+void print_header();
+```
 
 #### parse.c
-<pre>char *join(char **split, char *sep);
+```c
+char *join(char **split, char *sep);
 char **subarray(char **cmd, int l, int r);
 char **parse_line(char *line, char *sep);
-char ***parse_input(char *line);</pre>
+char ***parse_input(char *line);
+```
 
 #### shell.c
-<pre>int get_mesh_index();
+```c
+int get_mesh_index();
 void add_event(char *input);
 char *get_event(int i);
 void free_all();
-void print_error(int err, char *msg);</pre>
+void print_error(int err, char *msg);
+```
